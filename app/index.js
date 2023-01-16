@@ -44,6 +44,19 @@ app.get('/print.pdf', async (req, res) => {
 
 });
 
+app.get('/:url/:filename', async (req, res) => {
+    const { url } = req.params;
+
+    const pdf = await getPdf(url);
+
+    res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdf.length
+    });
+    res.send(pdf);
+
+});
+
 app.listen(port, () => {
     console.log(`web2pdf app listening at http://localhost:${port}`)
 });
