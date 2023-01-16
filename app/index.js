@@ -4,9 +4,7 @@ import puppeteer from 'puppeteer';
 const app = express();
 const port = 5000;
 
-app.get('/print', async (req, res) => {
-    const { url } = req.query;
-
+async function getPdf(url) {
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--disable-dev-shm-usage', '--no-sandbox']
@@ -16,6 +14,27 @@ app.get('/print', async (req, res) => {
     const pdf = await page.pdf({ format: 'A4' });
     
     await browser.close();
+
+    return pdf;
+}
+
+app.get('/print', async (req, res) => {
+    const { url } = req.query;
+
+    const pdf = await getPdf(url);
+
+    res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdf.length
+    });
+    res.send(pdf);
+
+});
+
+app.get('/print.pdf', async (req, res) => {
+    const { url } = req.query;
+
+    const pdf = await getPdf(url);
 
     res.set({
         'Content-Type': 'application/pdf',
